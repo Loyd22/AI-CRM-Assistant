@@ -82,7 +82,7 @@ export default function Dashboard() {
           onChange={(e) => setForm((p) => ({ ...p, status: e.target.value as TicketStatus }))}
         >
           <option value="open">Open</option>
-          <option value="in Progress">In Progress</option>
+          <option value="in_progress">In Progress</option>
           <option value="resolved">Resolved</option>
         </select>
 

@@ -1,0 +1,45 @@
+# ===== Secrets / env =====
+.env
+.env.*
+!.env.example
+
+# ===== Python =====
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.egg-info/
+dist/
+build/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.venv/
+venv/
+.envrc
+
+# ===== SQLite =====
+*.db
+*.sqlite
+*.sqlite3
+
+# ===== Logs =====
+*.log
+
+# ===== Node / Frontend =====
+node_modules/
+dist/
+.vite/
+*.tsbuildinfo
+
+# ===== OS / Editor =====
+.DS_Store
+Thumbs.db
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+!.vscode/launch.json
+!.vscode/tasks.json
+
+# ===== Docker =====
+**/.dockerignore

@@ -1,6 +1,11 @@
+// Purpose: Frontend client for AI analysis endpoints.
+// Fits in: src/api layer. Called by pages/components.
+// Inputs: ticketId number.
+// Outputs: AI analysis JSON from backend.
+
 import { apiFetch } from "./http";
 
-export type AIAnalyzeResult = {
+export type AIAnalysisResult = {
   summary: string;
   category: string;
   urgency: string;
@@ -9,7 +14,7 @@ export type AIAnalyzeResult = {
 };
 
 export function analyzeTicket(ticketId: number) {
-  return apiFetch<AIAnalyzeResult>(`/api/v1/tickets/${ticketId}/analyze`, {
+  return apiFetch<AIAnalysisResult>(`/api/v1/tickets/${ticketId}/analyze`, {
     method: "POST",
   });
 }

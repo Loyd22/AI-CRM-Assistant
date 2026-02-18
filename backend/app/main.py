@@ -42,3 +42,4 @@ app.include_router(api_router, prefix="/api/v1")
 def on_startup():
     """Actions to perform on application startup."""
     init_db()  # Initialize the database (create tables, etc.)
+

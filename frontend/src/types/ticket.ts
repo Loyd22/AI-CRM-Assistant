@@ -1,6 +1,9 @@
-// This limits status to only these 3 exact words.
-// So you don't accidentally use a wrong status like "Done".
-export type TicketStatus = "open" | "in Progress" | "resolved";
+// What the backend expects (API contract)
+export type TicketStatus = "open" | "in_progress" | "resolved";
+
+// What you show to users (UI labels)
+export type TicketStatusLabel = "Open" | "In Progress" | "Resolved";
+
 
 // This describes what a full Ticket looks like when backend sends it back.
 // Think: "this is the ticket object shape we will display in the UI".

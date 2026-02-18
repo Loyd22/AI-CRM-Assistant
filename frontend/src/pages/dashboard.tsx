@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { createTicket, listTickets } from "../api/tickets";
 import type { Ticket, TicketCreate, TicketStatus } from "../types/ticket";
+import { STATUS_OPTIONS, toLabel } from "../utils/status";
+
 
 export default function Dashboard() {
   // This holds the tickets we got from the backend
@@ -11,6 +13,9 @@ export default function Dashboard() {
 
   // This holds error message if something fails
   const [error, setError] = useState<string | null>(null);
+
+  const [submitting, setSubmitting] = useState(false);
+  const [success, setSuccess] = useState<string | null>(null);
 
   // This holds what the user types in the form
   const [form, setForm] = useState<TicketCreate>({
@@ -42,65 +47,73 @@ export default function Dashboard() {
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault(); // stop the browser from reloading the page
     setError(null);
-    try {
-      await createTicket(form); // send the form data to backend to create a ticket
-      setForm({ title: "", message: "", status: "open" }); // clear the form
-      await refresh(); // reload ticket list so the new ticket appears
-    } catch (e: any) {
-      setError(e?.message || "Failed to create ticket");
-    }
-  }
+    setSuccess(null);
+    setSubmitting(true);
 
-  return (
+    try {
+    await createTicket(form);
+    setForm({ title: "", message: "", status: "open" }); // IMPORTANT: API value
+    setSuccess("Ticket created ✅");
+    await refresh();
+  } catch (e: any) {
+    setError(e?.message || "Failed to create ticket");
+  } finally {
+    setSubmitting(false);
+  }
+}
+
+    return (
     <div style={{ padding: 24, maxWidth: 1000, margin: "0 auto" }}>
       <h1>Dashboard</h1>
 
       <h2>Create Ticket</h2>
 
-      {/* This is the form where the user types ticket title/message/status */}
+      {/* Purpose: show clean feedback to the user */}
+      {success && <p style={{ color: "green" }}>{success}</p>}
+      {error && <p style={{ color: "crimson" }}>{error}</p>}
+
       <form onSubmit={onSubmit} style={{ display: "grid", gap: 10, marginBottom: 24 }}>
         <input
           placeholder="Title"
           value={form.title}
-          // When user types, update form.title
           onChange={(e) => setForm((p) => ({ ...p, title: e.target.value }))}
           required
+          disabled={submitting}
         />
 
         <textarea
           placeholder="Message"
           value={form.message}
-          // When user types, update form.message
           onChange={(e) => setForm((p) => ({ ...p, message: e.target.value }))}
           required
           rows={4}
+          disabled={submitting}
         />
 
         <select
           value={form.status || "open"}
-          // When user changes status, update form.status
-          onChange={(e) => setForm((p) => ({ ...p, status: e.target.value as TicketStatus }))}
+          onChange={(e) =>
+            setForm((p) => ({ ...p, status: e.target.value as TicketStatus }))
+          }
+          disabled={submitting}
         >
-          <option value="open">Open</option>
-          <option value="in_progress">In Progress</option>
-          <option value="resolved">Resolved</option>
+          {STATUS_OPTIONS.map((opt) => (
+            <option key={opt.value} value={opt.value}>
+              {opt.label}
+            </option>
+          ))}
         </select>
 
-        <button type="submit">Create</button>
+        <button type="submit" disabled={submitting}>
+          {submitting ? "Creating..." : "Create"}
+        </button>
       </form>
 
       <h2>Tickets</h2>
-
-      {/* Show loading message while waiting for backend */}
       {loading && <p>Loading...</p>}
 
-      {/* Show error message if something failed */}
-      {error && <p style={{ color: "crimson" }}>{error}</p>}
-
-      {/* If loaded but no tickets exist */}
       {!loading && tickets.length === 0 && <p>No tickets yet.</p>}
 
-      {/* If tickets exist, show table */}
       {!loading && tickets.length > 0 && (
         <table width="100%" cellPadding={10} style={{ borderCollapse: "collapse" }}>
           <thead>
@@ -116,15 +129,11 @@ export default function Dashboard() {
             {tickets.map((t) => (
               <tr key={t.id} style={{ borderTop: "1px solid #ddd" }}>
                 <td>{t.id}</td>
-
-                {/* Clicking title goes to ticket detail page */}
                 <td>
+                  {/* Note: better with <Link> from react-router-dom, but this works */}
                   <a href={`/tickets/${t.id}`}>{t.title}</a>
                 </td>
-
-                <td>{t.status}</td>
-
-                {/* Convert created_at (string) into readable date */}
+                <td>{toLabel(t.status)}</td>
                 <td>{new Date(t.created_at).toLocaleString()}</td>
               </tr>
             ))}

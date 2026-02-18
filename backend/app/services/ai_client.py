@@ -1,76 +1,78 @@
-import re  # Tool for cleaning text (example: remove extra spaces)
-from app.services.ai_validator import validate_ai_result  # Checks that the AI output has the correct fields
+"""
+ai_client.py
+Purpose: Call OpenAI and return a strict JSON object for ticket analysis.
+Fits in: backend/app/services
+Inputs: ticket fields (title, message, current status)
+Output: dict with keys: summary, category, urgency, suggested_action, draft_reply
+Side effects: external API call to OpenAI
+"""
+
+import json
+import os
+from typing import Any, Dict, Optional
+
+from openai import OpenAI
+
+_client: Optional[OpenAI] = None
 
 
-# This function is a simple "local AI".
-# It does NOT call real AI like OpenAI.
-# It just uses keyword rules so the feature works for now.
-# Later you can replace this with real AI calls.
-def analyze_ticket_locally(title: str, message: str) -> dict:
-    # Combine title + message and make everything lowercase
-    # so word matching is easier (Login == login)
-    text = (title + " " + message).lower()
+def get_client() -> OpenAI:
+    """Create OpenAI client lazily so env vars exist inside Docker."""
+    global _client
+    if _client is not None:
+        return _client
 
-    # ---------- CATEGORY RULES ----------
-    # We guess the category based on keywords found in the ticket text.
-    if any(k in text for k in ["login", "password", "otp", "signin", "sign in"]):
-        category = "Authentication"
-    elif any(k in text for k in ["payment", "invoice", "billing", "refund"]):
-        category = "Billing"
-    elif any(k in text for k in ["bug", "error", "crash", "broken", "issue"]):
-        category = "Bug"
-    else:
-        category = "General"
+    api_key = os.getenv("OPENAI_API_KEY")
+    if not api_key:
+        raise RuntimeError("OPENAI_API_KEY is not set in the backend container.")
+    _client = OpenAI(api_key=api_key)
+    return _client
 
-    # ---------- URGENCY RULES ----------
-    # We guess urgency by looking for "emergency" type words.
-    if any(k in text for k in ["urgent", "asap", "immediately", "can't access", "down", "blocked"]):
-        urgency = "High"
-    elif any(k in text for k in ["soon", "today", "important"]):
-        urgency = "Medium"
-    else:
-        urgency = "Low"
 
-    # ---------- SUMMARY ----------
-    # Create a short summary from the message.
-    summary = message.strip()  # remove spaces at the start/end
-    summary = re.sub(r"\s+", " ", summary)  # replace many spaces/newlines with a single space
-    summary = summary[:140] + ("..." if len(summary) > 140 else "")  # cut to 140 chars max
+def get_model_name() -> str:
+    """Return model name from env, with a safe default."""
+    return os.getenv("OPENAI_MODEL", "gpt-4.1-mini")
 
-    # ---------- SUGGESTED ACTION ----------
-    # Suggest what the support team should do next.
-    suggested_action = (
-        "Ask for reproduction steps and screenshots, then assign to support/engineering."
-        if category == "Bug"
-        else "Ask for more details and provide next steps."
-    )
 
-    # ---------- DRAFT REPLY ----------
-    # A ready-to-send reply template to the user.
-    draft_reply = (
-        "Thanks for reaching out. We received your ticket and are looking into it. "
-        "Could you share more details (steps you took, screenshots, and the exact error message) "
-        "so we can help faster?"
-    )
+def call_openai_structured(prompt: str) -> Dict[str, Any]:
+    """
+    Call OpenAI Structured Outputs (Responses API) and return strict JSON.
 
-    # Return the AI result in a dictionary (JSON-like format)
-    return {
-        "summary": summary or "User reported an issue.",  # if summary is empty, use a default
-        "category": category,
-        "urgency": urgency,
-        "suggested_action": suggested_action,
-        "draft_reply": draft_reply,
+    Params:
+      prompt: full instruction text to the model
+
+    Returns:
+      dict: summary/category/urgency/suggested_action/draft_reply
+    """
+    # IMPORTANT: For Responses API, schema goes under text.format.schema
+    # and text.format.name is REQUIRED.
+    format_spec = {
+        "type": "json_schema",
+        "name": "ticket_analysis",
+        "strict": True,
+        "schema": {
+            "type": "object",
+            "additionalProperties": False,
+            "properties": {
+                "summary": {"type": "string"},
+                "category": {"type": "string"},
+                "urgency": {"type": "string"},
+                "suggested_action": {"type": "string"},
+                "draft_reply": {"type": "string"},
+            },
+            "required": ["summary", "category", "urgency", "suggested_action", "draft_reply"],
+        },
     }
 
+    client = get_client()
+    resp = client.responses.create(
+        model=get_model_name(),
+        input=prompt,
+        text={"format": format_spec},
+        temperature=0.2,
+    )
 
-# This is the main function your API should call.
-# It generates the AI output and then validates it to make sure it is correct.
-def analyze_ticket(title: str, message: str) -> dict:
-    # Step 1: generate AI-like result using local rules
-    raw = analyze_ticket_locally(title, message)
-
-    # Step 2: validate result to guarantee it has all required fields
-    validated = validate_ai_result(raw)
-
-    # Step 3: convert the validated object back into normal JSON/dict
-    return validated.model_dump()
+    output_text = resp.output_text
+    if not output_text:
+        raise RuntimeError("Empty output_text from OpenAI.")
+    return json.loads(output_text)

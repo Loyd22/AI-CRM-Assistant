@@ -1,0 +1,5 @@
+fastapi
+uvicorn[standard]
+sqlalchemy
+pydantic
+openai>=1.0.0

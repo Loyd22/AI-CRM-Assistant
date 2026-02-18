@@ -1,0 +1,27 @@
+services:
+  backend:
+    build: ./backend
+    container_name: ai-crm-backend
+    ports:
+      - "8000:8000"
+    environment:
+      # SQLite inside container (saved to /data/app.db)
+      - DATABASE_URL=sqlite:////data/app.db
+    volumes:
+      - backend_data:/data
+
+  frontend:
+    build: ./frontend
+    container_name: ai-crm-frontend
+    ports:
+      - "5173:80"
+    environment:
+      # For Vite, this is only used during build time.
+      # Since we serve built static files, you must bake API URL into the build,
+      # or use a reverse proxy later.
+      - VITE_API_BASE_URL=http://127.0.0.1:8000
+    depends_on:
+      - backend
+
+volumes:
+  backend_data:

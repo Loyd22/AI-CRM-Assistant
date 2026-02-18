@@ -7,6 +7,8 @@ services:
     environment:
       # SQLite inside container (saved to /data/app.db)
       - DATABASE_URL=sqlite:////data/app.db
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - OPENAI_MODEL=${OPENAI_MODEL}
     volumes:
       - backend_data:/data
 

@@ -1,0 +1,332 @@
+/* 
+  global.css
+  Purpose: Global UI styling for AI CRM Assistant (forms, tables, cards, layout).
+  Fits in: frontend/src/global.css (imported once in main.tsx)
+  Side effects: applies base styles to the whole app
+*/
+
+/* ---------- Design tokens ---------- */
+:root {
+  --bg: #f6f7fb;
+  --surface: #ffffff;
+  --text: #111827;
+  --muted: #6b7280;
+  --border: #e5e7eb;
+
+  --primary: #2563eb;
+  --primary-600: #1d4ed8;
+
+  --success: #16a34a;
+  --danger: #dc2626;
+  --warning: #f59e0b;
+
+  --radius: 14px;
+  --shadow: 0 10px 30px rgba(17, 24, 39, 0.08);
+}
+
+/* ---------- Base reset ---------- */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica,
+    Arial, "Apple Color Emoji", "Segoe UI Emoji";
+  line-height: 1.5;
+}
+
+/* Links */
+a {
+  color: var(--primary);
+  text-decoration: none;
+}
+a:hover {
+  text-decoration: underline;
+}
+
+/* ---------- App layout helpers ---------- */
+.container {
+  max-width: 1024px;
+  margin: 0 auto;
+  padding: 24px;
+}
+
+.page {
+  padding: 24px;
+}
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 18px;
+}
+
+/* ---------- Typography ---------- */
+h1,
+h2,
+h3 {
+  margin: 0 0 12px;
+  letter-spacing: -0.02em;
+}
+
+h1 {
+  font-size: 32px;
+}
+h2 {
+  font-size: 20px;
+  color: #0f172a;
+}
+p {
+  margin: 0 0 10px;
+  color: var(--text);
+}
+small {
+  color: var(--muted);
+}
+
+/* ---------- Form UI ---------- */
+form {
+  margin: 0;
+}
+
+label {
+  display: block;
+  font-weight: 600;
+  margin: 10px 0 6px;
+  color: #0f172a;
+}
+
+input,
+textarea,
+select {
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: #fff;
+  color: var(--text);
+  outline: none;
+  transition: border-color 120ms ease, box-shadow 120ms ease;
+}
+
+textarea {
+  resize: vertical;
+  min-height: 100px;
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+  border-color: rgba(37, 99, 235, 0.55);
+  box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.14);
+}
+
+/* Inline form grid */
+.form-grid {
+  display: grid;
+  gap: 12px;
+}
+
+/* ---------- Buttons ---------- */
+button {
+  appearance: none;
+  border: 0;
+  border-radius: 10px;
+  padding: 10px 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 80ms ease, background 120ms ease, opacity 120ms ease;
+}
+
+button:active {
+  transform: translateY(1px);
+}
+
+.btn {
+  background: var(--primary);
+  color: #fff;
+}
+.btn:hover {
+  background: var(--primary-600);
+}
+
+.btn-secondary {
+  background: #111827;
+  color: #fff;
+}
+.btn-secondary:hover {
+  background: #0b1220;
+}
+
+.btn-ghost {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: #111827;
+}
+.btn-ghost:hover {
+  background: #f3f4f6;
+}
+
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+  transform: none;
+}
+
+/* ---------- Alerts / messages ---------- */
+.alert {
+  border-radius: 12px;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  background: #fff;
+}
+
+.alert-success {
+  border-color: rgba(22, 163, 74, 0.35);
+  background: rgba(22, 163, 74, 0.08);
+  color: #14532d;
+}
+
+.alert-danger {
+  border-color: rgba(220, 38, 38, 0.35);
+  background: rgba(220, 38, 38, 0.08);
+  color: #7f1d1d;
+}
+
+/* ---------- Table styling ---------- */
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  overflow: hidden;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  background: var(--surface);
+  box-shadow: var(--shadow);
+}
+
+.table th,
+.table td {
+  padding: 12px 14px;
+  text-align: left;
+  border-bottom: 1px solid var(--border);
+}
+
+.table th {
+  color: #0f172a;
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  background: #f9fafb;
+}
+
+.table tr:hover td {
+  background: #f9fafb;
+}
+
+/* ---------- Status badges ---------- */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+  border: 1px solid var(--border);
+}
+
+.badge-open {
+  background: rgba(37, 99, 235, 0.08);
+  color: #1e40af;
+  border-color: rgba(37, 99, 235, 0.25);
+}
+
+.badge-inprogress {
+  background: rgba(245, 158, 11, 0.10);
+  color: #92400e;
+  border-color: rgba(245, 158, 11, 0.30);
+}
+
+.badge-resolved {
+  background: rgba(22, 163, 74, 0.10);
+  color: #166534;
+  border-color: rgba(22, 163, 74, 0.30);
+}
+
+/* ---------- Ticket detail + AI panel ---------- */
+.header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.divider {
+  height: 1px;
+  background: var(--border);
+  margin: 16px 0;
+}
+
+.ai-panel {
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+  box-shadow: var(--shadow);
+  padding: 16px;
+}
+
+.ai-panel h2 {
+  margin-bottom: 10px;
+}
+
+.ai-grid {
+  display: grid;
+  gap: 12px;
+}
+
+.ai-grid .row {
+  display: grid;
+  gap: 6px;
+}
+
+.ai-grid .row b {
+  color: #0f172a;
+}
+
+/* ---------- Code-like block (for draft reply) ---------- */
+.pretty-pre {
+  background: #0b1220;
+  color: #e5e7eb;
+  border-radius: 12px;
+  padding: 12px;
+  overflow: auto;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
+    "Courier New", monospace;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+/* ---------- Small responsive tweak ---------- */
+@media (max-width: 640px) {
+  .container {
+    padding: 16px;
+  }
+
+  h1 {
+    font-size: 26px;
+  }
+}

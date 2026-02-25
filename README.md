@@ -1,95 +1,95 @@
-Tech Stack
+AI CRM Assistant
+
+AI-powered CRM system with ticket and lead management, including AI-generated summaries, classification, urgency scoring, and draft replies.
+
+🚀 Tech Stack
 Frontend
 
-React (UI)
+React
 
-TypeScript (type-safe frontend)
+TypeScript
 
-Vite (dev server + build tool)
+Vite
 
 Backend
 
-FastAPI (Python web framework)
+FastAPI
 
-Uvicorn (ASGI server)
+Uvicorn
 
-AI
+AI Integration
 
-OpenAI API (LLM analysis for tickets/leads, summaries, etc.)
+OpenAI API (LLM-powered ticket/lead analysis)
 
 Database
 
 SQLite (default local database)
 
-DevOps / Tooling
+DevOps & Tooling
 
-Docker + Docker Compose (containerized local run)
+Docker
 
-GitHub (version control)
+Docker Compose
 
-Run the Project
+GitHub
 
-This project has:
+🛠️ Installation & Running the Project
 
-Backend: FastAPI (port 8000)
+This project contains:
 
-Frontend: React + Vite (port 5173)
+Backend → FastAPI (Port 8000)
 
-Prerequisites
+Frontend → React + Vite (Port 5173)
 
-Install these first:
-
-Git
-
-Docker Desktop (recommended)
-
-If running locally (no Docker): Python 3.10+ and Node.js 18+
-
-Option A: Run with Docker (Recommended)
-1) Clone the repo
+✅ Option A: Run with Docker (Recommended)
+1️⃣ Clone the repository
 git clone https://github.com/Loyd22/AI-CRM-Assistant.git
 cd AI-CRM-Assistant
-2) Create .env in the project root
+2️⃣ Create .env file (Project Root)
 
-Create a file named .env beside docker-compose.yml:
+Create a .env file beside docker-compose.yml:
 
 OPENAI_API_KEY=your_openai_key_here
 OPENAI_MODEL=your_model_here
-3) Build and run
+3️⃣ Build and start containers
 docker compose up --build
-4) Open in browser
+4️⃣ Access the application
 
-Frontend: http://localhost:5173
+Frontend:
+http://localhost:5173
 
-Backend API docs (Swagger): http://localhost:8000/docs
+Backend API Docs (Swagger):
+http://localhost:8000/docs
 
-5) Stop containers
+5️⃣ Stop containers
 
-Press Ctrl + C, then:
+Press:
+
+Ctrl + C
+
+Then run:
 
 docker compose down
-Option B: Run Locally (No Docker)
-Backend (FastAPI)
+💻 Option B: Run Locally (Without Docker)
+🔹 Backend Setup
+1️⃣ Navigate to backend
 cd backend
+2️⃣ Create virtual environment
 python -m venv .venv
+3️⃣ Activate virtual environment
 
-Activate venv:
-
-Windows PowerShell
+Windows (PowerShell)
 
 .venv\Scripts\Activate.ps1
 
 Mac/Linux
 
 source .venv/bin/activate
-
-Install dependencies:
-
+4️⃣ Install dependencies
 pip install -r requirements.txt
+5️⃣ Set environment variables
 
-Set environment variables:
-
-Windows PowerShell
+Windows (PowerShell)
 
 $env:OPENAI_API_KEY="your_openai_key_here"
 $env:OPENAI_MODEL="your_model_here"
@@ -98,9 +98,7 @@ Mac/Linux
 
 export OPENAI_API_KEY="your_openai_key_here"
 export OPENAI_MODEL="your_model_here"
-
-Run the backend:
-
+6️⃣ Run backend
 uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
 
 Backend will be available at:
@@ -109,55 +107,53 @@ http://localhost:8000
 
 http://localhost:8000/docs
 
-Frontend (Vite)
+🔹 Frontend Setup
 
-Open a new terminal:
+Open a new terminal.
 
+1️⃣ Navigate to frontend
 cd frontend
+2️⃣ Install dependencies
 npm install
+3️⃣ Set API base URL
 
-Set API base URL:
-
-Windows PowerShell
+Windows (PowerShell)
 
 $env:VITE_API_BASE_URL="http://127.0.0.1:8000"
 
 Mac/Linux
 
 export VITE_API_BASE_URL="http://127.0.0.1:8000"
-
-Run frontend:
-
+4️⃣ Run frontend
 npm run dev
 
 Frontend will be available at:
 
 http://localhost:5173
 
-Troubleshooting
-Docker ports already in use
+🧱 Project Structure
+AI-CRM-Assistant/
+│
+├── backend/          # FastAPI backend
+├── frontend/         # React + Vite frontend
+├── docker-compose.yml
+├── .env              # Environment variables (not committed)
+└── README.md
+⚠️ Troubleshooting
+Port already in use
 
-Stop other services using the ports:
+Make sure ports 8000 and 5173 are not used by other applications.
 
-8000 (backend)
+OpenAI API not working
 
-5173 (frontend)
-
-Then rerun:
-
-docker compose up --build
-Backend cannot call OpenAI
-
-Make sure .env exists in the project root and has:
+Ensure .env file exists in the project root and contains:
 
 OPENAI_API_KEY
-
 OPENAI_MODEL
+Frontend cannot connect to backend
 
-Frontend cannot reach backend
-
-Ensure backend is running at:
+Confirm backend is running at:
 
 http://127.0.0.1:8000
 
-If using local dev, confirm VITE_API_BASE_URL is set before running npm run dev.
+And VITE_API_BASE_URL is set correctly before starting the frontend.
